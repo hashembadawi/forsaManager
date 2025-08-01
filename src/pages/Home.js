@@ -152,7 +152,10 @@ const Home = () => {
                   <div className="loading">Loading dashboard data...</div>
                 ) : (
                   <div className="dashboard-grid">
-                    <div className="dashboard-card">
+                    <div 
+                      className="dashboard-card clickable" 
+                      onClick={() => navigate('/users')}
+                    >
                       <h3>👥 Users Count</h3>
                       <p className="dashboard-number">{dashboardData ? dashboardData.userCount : '-'}</p>
                       <p>Total number of registered users in the system</p>
