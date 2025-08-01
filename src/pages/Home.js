@@ -108,33 +108,6 @@ const Home = () => {
                   Dashboard
                 </button>
               </li>
-              <li>
-                <button 
-                  className={`nav-item ${activeSection === 'advertisements' ? 'active' : ''}`}
-                  onClick={() => handleSectionChange('advertisements')}
-                >
-                  <span className="nav-icon">📢</span>
-                  Advertisements
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`nav-item ${activeSection === 'sales' ? 'active' : ''}`}
-                  onClick={() => handleSectionChange('sales')}
-                >
-                  <span className="nav-icon">💰</span>
-                  Sales
-                </button>
-              </li>
-              <li>
-                <button 
-                  className={`nav-item ${activeSection === 'customers' ? 'active' : ''}`}
-                  onClick={() => handleSectionChange('customers')}
-                >
-                  <span className="nav-icon">👥</span>
-                  Customers
-                </button>
-              </li>
             </ul>
           </nav>
         </aside>
@@ -179,57 +152,6 @@ const Home = () => {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-            
-            {activeSection === 'advertisements' && (
-              <div className="section-content">
-                <div className="dashboard-card">
-                  <h3>📢 Ad Management</h3>
-                  <p>Create, edit, and manage your advertisement campaigns</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>📊 Ad Performance</h3>
-                  <p>Monitor advertisement performance and analytics</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>🎯 Target Audience</h3>
-                  <p>Manage target audiences and demographic settings</p>
-                </div>
-              </div>
-            )}
-            
-            {activeSection === 'sales' && (
-              <div className="section-content">
-                <div className="dashboard-card">
-                  <h3>💰 Sales Overview</h3>
-                  <p>View daily, weekly, and monthly sales summaries</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>🧾 Transactions</h3>
-                  <p>Manage and track all sales transactions</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>📈 Sales Analytics</h3>
-                  <p>Analyze sales trends and performance</p>
-                </div>
-              </div>
-            )}
-            
-            {activeSection === 'customers' && (
-              <div className="section-content">
-                <div className="dashboard-card">
-                  <h3>👥 Customer Database</h3>
-                  <p>Manage customer information and profiles</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>🎯 Customer Insights</h3>
-                  <p>View customer behavior and purchase history</p>
-                </div>
-                <div className="dashboard-card">
-                  <h3>📞 Customer Support</h3>
-                  <p>Handle customer inquiries and support tickets</p>
-                </div>
               </div>
             )}
           </div>
