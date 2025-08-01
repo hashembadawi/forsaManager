@@ -25,8 +25,6 @@ const Home = () => {
         isAdmin: userIsAdmin === 'true'
       });
       
-      // Fetch dashboard data when component mounts
-      fetchDashboardData();
     } else {
       // If no token found, redirect to login
       navigate('/');
@@ -90,7 +88,7 @@ const Home = () => {
       <header className="home-header">
         <h1>Syria Market Manager</h1>
         <div className="header-user-section">
-          <span className="username">Welcome, {userInfo.name}</span>
+          <span className="username">{userInfo.name}</span>
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
@@ -143,9 +141,15 @@ const Home = () => {
         
         <main className="home-content">
           <div className="content-header">
-            <h2>{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
+            <h2>{activeSection ? activeSection.charAt(0).toUpperCase() + activeSection.slice(1) : 'Home'}</h2>
           </div>
           <div className="content-body">
+            {!activeSection && (
+              <div className="welcome-content">
+                <h2>Welcome to Syria Market Manager</h2>
+              </div>
+            )}
+            
             {activeSection === 'dashboard' && (
               <div className="dashboard-content">
                 {loading ? (

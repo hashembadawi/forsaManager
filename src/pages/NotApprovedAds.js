@@ -356,7 +356,7 @@ const NotApprovedAds = () => {
                     {image ? (
                       <img 
                         src={image} 
-                        alt={`${selectedAd.adTitle} - Image ${index + 1}`}
+                        alt={`${selectedAd.adTitle} - ${index + 1}`}
                         onError={(e) => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';

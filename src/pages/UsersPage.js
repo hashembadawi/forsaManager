@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UsersPage.css';
 
@@ -11,89 +11,10 @@ const UsersPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchField, setSearchField] = useState('name'); // 'name' or 'phone'
+  const [isInitialLoad, setIsInitialLoad] = useState(true); // Track initial load
   const navigate = useNavigate();
 
   const usersPerPage = 200;
-
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const url = new URL('https://sahbo-app-api.onrender.com/api/manager/users-list');
-      
-      // Fetch all users for frontend filtering
-      url.searchParams.append('page', 1);
-      url.searchParams.append('limit', 1000); // Fetch a large number to get all users
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Fetched users:', data);
-        
-        let users = [];
-        // Handle different response structures
-        if (Array.isArray(data)) {
-          users = data;
-        } else if (data.users && Array.isArray(data.users)) {
-          users = data.users;
-        } else if (data.data && Array.isArray(data.data)) {
-          users = data.data;
-        } else {
-          users = data || [];
-        }
-        
-        setAllUsers(users);
-        setFilteredUsers(users); // Initially show all users
-        setTotalPages(Math.ceil(users.length / usersPerPage));
-      } else if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.clear();
-        navigate('/');
-      } else {
-        console.error('Failed to fetch users:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
-
-  // Frontend search function
-  const performSearch = useCallback(() => {
-    if (!searchTerm.trim()) {
-      setFilteredUsers(allUsers);
-      setTotalPages(Math.ceil(allUsers.length / usersPerPage));
-      setCurrentPage(1);
-      return;
-    }
-
-    const filtered = allUsers.filter(user => {
-      const searchValue = searchTerm.toLowerCase().trim();
-      
-      if (searchField === 'name') {
-        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-        return fullName.includes(searchValue) || 
-               (user.firstName || '').toLowerCase().includes(searchValue) ||
-               (user.lastName || '').toLowerCase().includes(searchValue);
-      } else if (searchField === 'phone') {
-        return (user.phoneNumber || '').toLowerCase().includes(searchValue);
-      }
-      
-      return false;
-    });
-
-    setFilteredUsers(filtered);
-    setTotalPages(Math.ceil(filtered.length / usersPerPage));
-    setCurrentPage(1);
-  }, [allUsers, searchTerm, searchField]);
 
   const deleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
@@ -145,17 +66,102 @@ const UsersPage = () => {
       return;
     }
     
-    fetchUsers();
-  }, [navigate, fetchUsers]);
+    // Define fetchUsers function inside useEffect to avoid dependency issues
+    const fetchUsersData = async () => {
+      setLoading(true);
+      try {
+        const url = new URL('https://sahbo-app-api.onrender.com/api/manager/users-list');
+        
+        // Fetch users with limit of 200
+        url.searchParams.append('page', 1);
+        url.searchParams.append('limit', 200);
 
-  // Trigger search when searchTerm or searchField changes
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched users:', data);
+          
+          let users = [];
+          // Handle different response structures
+          if (Array.isArray(data)) {
+            users = data;
+          } else if (data.users && Array.isArray(data.users)) {
+            users = data.users;
+          } else if (data.data && Array.isArray(data.data)) {
+            users = data.data;
+          } else {
+            users = data || [];
+          }
+          
+          setAllUsers(users);
+          setFilteredUsers(users); // Initially show all users
+          setTotalPages(Math.ceil(users.length / usersPerPage));
+          setIsInitialLoad(false); // Mark initial load as complete
+        } else if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.clear();
+          navigate('/');
+        } else {
+          console.error('Failed to fetch users:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUsersData();
+  }, [navigate]);
+
+  // Trigger search when searchTerm or searchField changes (but not on initial load)
   useEffect(() => {
-    performSearch();
-  }, [performSearch]);
+    // Only perform search if we have users loaded and it's not the initial load
+    if (allUsers.length > 0 && !isInitialLoad) {
+      // Define performSearch function inside useEffect to avoid dependency issues
+      const doSearch = () => {
+        if (!searchTerm.trim()) {
+          setFilteredUsers(allUsers);
+          setTotalPages(Math.ceil(allUsers.length / usersPerPage));
+          setCurrentPage(1);
+          return;
+        }
+
+        const filtered = allUsers.filter(user => {
+          const searchValue = searchTerm.toLowerCase().trim();
+          
+          if (searchField === 'name') {
+            const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
+            return fullName.includes(searchValue) || 
+                   (user.firstName || '').toLowerCase().includes(searchValue) ||
+                   (user.lastName || '').toLowerCase().includes(searchValue);
+          } else if (searchField === 'phone') {
+            return (user.phoneNumber || '').toLowerCase().includes(searchValue);
+          }
+          
+          return false;
+        });
+
+        setFilteredUsers(filtered);
+        setTotalPages(Math.ceil(filtered.length / usersPerPage));
+        setCurrentPage(1);
+      };
+      
+      doSearch();
+    }
+  }, [searchTerm, searchField, allUsers, isInitialLoad]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    performSearch();
+    // Trigger search by updating searchTerm, which will trigger the useEffect
+    setSearchTerm(searchTerm); // This will trigger the useEffect to perform search
   };
 
   const handlePageChange = (newPage) => {
