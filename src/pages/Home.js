@@ -4,6 +4,9 @@ import './Home.css';
 
 const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
+  const [activeSection, setActiveSection] = useState('');
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,11 +24,46 @@ const Home = () => {
         isVerified: userIsVerified === 'true',
         isAdmin: userIsAdmin === 'true'
       });
+      
+      // Fetch dashboard data when component mounts
+      fetchDashboardData();
     } else {
       // If no token found, redirect to login
       navigate('/');
     }
   }, [navigate]);
+
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://sahbo-app-api.onrender.com/api/manager/dashboard-data', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      } else {
+        console.error('Failed to fetch dashboard data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    if (section === 'dashboard') {
+      fetchDashboardData();
+    }
+  };
 
   const handleLogout = () => {
     // Clear all user data from localStorage
@@ -51,54 +89,142 @@ const Home = () => {
     <div className="home-container">
       <header className="home-header">
         <h1>Syria Market Manager</h1>
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
+        <div className="header-user-section">
+          <span className="username">Welcome, {userInfo.name}</span>
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
       </header>
       
-      <main className="home-content">
-        <div className="welcome-section">
-          <div className="welcome-card">
-            <h2>Welcome, {userInfo.name}!</h2>
-            <div className="user-info">
-              <p><strong>Email:</strong> {userInfo.email || 'Not provided'}</p>
-              <p><strong>Phone:</strong> {userInfo.phone}</p>
-              <p><strong>Status:</strong> 
-                <span className={`status ${userInfo.isVerified ? 'verified' : 'unverified'}`}>
-                  {userInfo.isVerified ? 'Verified' : 'Unverified'}
-                </span>
-              </p>
-              {userInfo.isAdmin && (
-                <p><strong>Role:</strong> <span className="admin-badge">Administrator</span></p>
-              )}
-            </div>
-            <p className="welcome-message">You have successfully logged into the Syria Market Manager system.</p>
-            <p>Here you can manage your market operations, track inventory, and monitor sales.</p>
+      <div className="main-layout">
+        <aside className="sidebar">
+          <nav className="sidebar-nav">
+            <ul>
+              <li>
+                <button 
+                  className={`nav-item ${activeSection === 'dashboard' ? 'active' : ''}`}
+                  onClick={() => handleSectionChange('dashboard')}
+                >
+                  <span className="nav-icon">📊</span>
+                  Dashboard
+                </button>
+              </li>
+              <li>
+                <button 
+                  className={`nav-item ${activeSection === 'advertisements' ? 'active' : ''}`}
+                  onClick={() => handleSectionChange('advertisements')}
+                >
+                  <span className="nav-icon">📢</span>
+                  Advertisements
+                </button>
+              </li>
+              <li>
+                <button 
+                  className={`nav-item ${activeSection === 'sales' ? 'active' : ''}`}
+                  onClick={() => handleSectionChange('sales')}
+                >
+                  <span className="nav-icon">💰</span>
+                  Sales
+                </button>
+              </li>
+              <li>
+                <button 
+                  className={`nav-item ${activeSection === 'customers' ? 'active' : ''}`}
+                  onClick={() => handleSectionChange('customers')}
+                >
+                  <span className="nav-icon">👥</span>
+                  Customers
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </aside>
+        
+        <main className="home-content">
+          <div className="content-header">
+            <h2>{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
           </div>
-          
-          <div className="dashboard-grid">
-            <div className="dashboard-card">
-              <h3>📊 Dashboard</h3>
-              <p>View your sales analytics and performance metrics</p>
-            </div>
+          <div className="content-body">
+            {activeSection === 'dashboard' && (
+              <div className="dashboard-content">
+                {loading ? (
+                  <div className="loading">Loading dashboard data...</div>
+                ) : (
+                  <div className="dashboard-grid">
+                    <div className="dashboard-card">
+                      <h3>👥 Users Count</h3>
+                      <p className="dashboard-number">{dashboardData ? dashboardData.userCount : '-'}</p>
+                      <p>Total number of registered users in the system</p>
+                    </div>
+                    <div className="dashboard-card">
+                      <h3>❌ NotApproved Ads</h3>
+                      <p className="dashboard-number">{dashboardData ? dashboardData.notApprovedAdsCount : '-'}</p>
+                      <p>Advertisements waiting for approval</p>
+                    </div>
+                    <div className="dashboard-card">
+                      <h3>✅ Approved Ads</h3>
+                      <p className="dashboard-number">{dashboardData ? dashboardData.approvedAdsCount : '-'}</p>
+                      <p>All approved advertisements</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             
-            <div className="dashboard-card">
-              <h3>📦 Inventory</h3>
-              <p>Manage your product inventory and stock levels</p>
-            </div>
+            {activeSection === 'advertisements' && (
+              <div className="section-content">
+                <div className="dashboard-card">
+                  <h3>📢 Ad Management</h3>
+                  <p>Create, edit, and manage your advertisement campaigns</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>📊 Ad Performance</h3>
+                  <p>Monitor advertisement performance and analytics</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>🎯 Target Audience</h3>
+                  <p>Manage target audiences and demographic settings</p>
+                </div>
+              </div>
+            )}
             
-            <div className="dashboard-card">
-              <h3>💰 Sales</h3>
-              <p>Track daily sales and revenue reports</p>
-            </div>
+            {activeSection === 'sales' && (
+              <div className="section-content">
+                <div className="dashboard-card">
+                  <h3>💰 Sales Overview</h3>
+                  <p>View daily, weekly, and monthly sales summaries</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>🧾 Transactions</h3>
+                  <p>Manage and track all sales transactions</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>📈 Sales Analytics</h3>
+                  <p>Analyze sales trends and performance</p>
+                </div>
+              </div>
+            )}
             
-            <div className="dashboard-card">
-              <h3>👥 Customers</h3>
-              <p>Manage customer information and relationships</p>
-            </div>
+            {activeSection === 'customers' && (
+              <div className="section-content">
+                <div className="dashboard-card">
+                  <h3>👥 Customer Database</h3>
+                  <p>Manage customer information and profiles</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>🎯 Customer Insights</h3>
+                  <p>View customer behavior and purchase history</p>
+                </div>
+                <div className="dashboard-card">
+                  <h3>📞 Customer Support</h3>
+                  <p>Handle customer inquiries and support tickets</p>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
