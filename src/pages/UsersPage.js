@@ -183,7 +183,7 @@ const UsersPage = () => {
     <div className="users-page">
       <div className="users-header">
         <button onClick={handleBackToDashboard} className="back-button">
-          ← Back to Dashboard
+          ← Back to home
         </button>
         <h1>Users Management</h1>
         

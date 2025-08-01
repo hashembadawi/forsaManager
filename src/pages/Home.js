@@ -160,7 +160,10 @@ const Home = () => {
                       <p className="dashboard-number">{dashboardData ? dashboardData.userCount : '-'}</p>
                       <p>Total number of registered users in the system</p>
                     </div>
-                    <div className="dashboard-card">
+                    <div 
+                      className="dashboard-card clickable" 
+                      onClick={() => navigate('/not-approved-ads')}
+                    >
                       <h3>❌ NotApproved Ads</h3>
                       <p className="dashboard-number">{dashboardData ? dashboardData.notApprovedAdsCount : '-'}</p>
                       <p>Advertisements waiting for approval</p>

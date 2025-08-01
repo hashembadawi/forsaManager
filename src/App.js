@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Home from './pages/Home';
 import UsersPage from './pages/UsersPage';
+import NotApprovedAds from './pages/NotApprovedAds';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/not-approved-ads" element={<NotApprovedAds />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
