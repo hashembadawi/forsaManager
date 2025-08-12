@@ -12,6 +12,42 @@ const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchField, setSearchField] = useState('name'); // 'name' or 'phone'
   const [isInitialLoad, setIsInitialLoad] = useState(true); // Track initial load
+  const [updatingSpecial, setUpdatingSpecial] = useState(null); // Track user being updated
+  // Update user's isSpecial status
+  const updateSpecialStatus = async (userId, newStatus) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return;
+    }
+    setUpdatingSpecial(userId);
+    try {
+      const response = await fetch('https://sahbo-app-api.onrender.com/api/manager/update-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ userId, isSpecial: newStatus })
+      });
+      if (response.ok) {
+        // Update user in state
+        setAllUsers(prev => prev.map(user => (user._id || user.id) === userId ? { ...user, isSpecial: newStatus } : user));
+        setFilteredUsers(prev => prev.map(user => (user._id || user.id) === userId ? { ...user, isSpecial: newStatus } : user));
+        alert('User special status updated!');
+      } else if (response.status === 401) {
+        localStorage.clear();
+        navigate('/');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to update status: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      alert('Error updating special status.');
+    } finally {
+      setUpdatingSpecial(null);
+    }
+  };
   const navigate = useNavigate();
 
   const usersPerPage = 200;
@@ -247,6 +283,7 @@ const UsersPage = () => {
                   <th>Full Name</th>
                   <th>Phone Number</th>
                   <th>Verified</th>
+                  <th>Special</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -268,12 +305,25 @@ const UsersPage = () => {
                           </span>
                         </td>
                         <td>
+                          <span className={`status ${user.isSpecial ? 'special' : 'not-special'}`}>
+                            {user.isSpecial ? 'True' : 'False'}
+                          </span>
+                        </td>
+                        <td style={{ display: 'flex', gap: '6px' }}>
                           <button 
                             onClick={() => deleteUser(user._id || user.id)}
                             className="delete-button"
                             title="Delete User"
                           >
                             🗑️ Delete
+                          </button>
+                          <button
+                            onClick={() => updateSpecialStatus(user._id || user.id, !user.isSpecial)}
+                            className="special-button"
+                            disabled={updatingSpecial === (user._id || user.id)}
+                            title={user.isSpecial ? 'Unset Special' : 'Set as Special'}
+                          >
+                            {updatingSpecial === (user._id || user.id) ? 'Updating...' : (user.isSpecial ? 'Unset Special' : 'Set Special')}
                           </button>
                         </td>
                       </tr>
