@@ -86,7 +86,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <header className="home-header">
-        <h1>Syria Market Manager</h1>
+        <h1>Forsa Manager</h1>
         <div className="header-user-section">
           <span className="username">{userInfo.name}</span>
           <button onClick={handleLogout} className="logout-button">
@@ -119,7 +119,7 @@ const Home = () => {
           <div className="content-body">
             {!activeSection && (
               <div className="welcome-content">
-                <h2>Welcome to Syria Market Manager</h2>
+                <h2>Welcome to Forsa Manager</h2>
               </div>
             )}
             

@@ -68,7 +68,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Syria Market Manager</h2>
+        <h2>Forsa Manager</h2>
         <p>sign in to your account</p>
         
         <form onSubmit={handleSubmit}>
