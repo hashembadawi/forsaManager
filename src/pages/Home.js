@@ -107,6 +107,13 @@ const Home = () => {
                   <span className="nav-icon">📊</span>
                   Dashboard
                 </button>
+                <button 
+                  className={`nav-item ${activeSection === 'settings' ? 'active' : ''}`}
+                  onClick={() => handleSectionChange('settings')}
+                >
+                  <span className="nav-icon">⚙️</span>
+                  Settings
+                </button>
               </li>
             </ul>
           </nav>
@@ -154,6 +161,14 @@ const Home = () => {
                 )}
               </div>
             )}
+              {activeSection === 'settings' && (
+                <div className="settings-content">
+                  <div className="dashboard-card clickable" onClick={() => navigate('/images-mgm')}>
+                    <h3>🖼️ Application Images</h3>
+                    <p>Update and manage application images</p>
+                  </div>
+                </div>
+              )}
           </div>
         </main>
       </div>

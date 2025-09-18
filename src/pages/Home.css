@@ -109,10 +109,6 @@
   border-right: 3px solid #0056b3;
 }
 
-.nav-icon {
-  font-size: 1.2rem;
-}
-
 .content-header {
   margin-bottom: 2rem;
 }
@@ -175,8 +171,13 @@
 
 .dashboard-card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
