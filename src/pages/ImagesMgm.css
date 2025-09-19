@@ -19,7 +19,17 @@
   box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
   position: relative;
 }
+.images-grid {
+  width: 100%;
+  overflow-x: auto;
+  padding: 16px 0;
+}
 
+.grid-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
 .images-header h1 {
   position: absolute;
   left: 50%;
