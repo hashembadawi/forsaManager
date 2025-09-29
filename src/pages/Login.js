@@ -41,7 +41,8 @@ const Login = () => {
         if (data.userIsAdmin) {
           // Store user data in localStorage
           localStorage.setItem('token', data.token);
-          localStorage.setItem('userName', data.userName);
+          localStorage.setItem('userFirstName', data.userFirstName);
+          localStorage.setItem('userLastName', data.userLastName);
           localStorage.setItem('userId', data.userId);
           localStorage.setItem('userPhone', data.userPhone);
           localStorage.setItem('userProfileImage', data.userProfileImage || '');

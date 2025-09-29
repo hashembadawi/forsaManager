@@ -12,14 +12,15 @@ const Home = () => {
   useEffect(() => {
     // Get user data from localStorage
     const token = localStorage.getItem('token');
-    const userName = localStorage.getItem('userName');
+    const userFirstName = localStorage.getItem('userFirstName');
+    const userLastName = localStorage.getItem('userLastName');
     const userPhone = localStorage.getItem('userPhone');
     const userIsVerified = localStorage.getItem('userIsVerified');
     const userIsAdmin = localStorage.getItem('userIsAdmin');
     
-    if (token && userName) {
+    if (token && userFirstName && userLastName) {
       setUserInfo({
-        name: userName,
+        name: userFirstName + ' ' + userLastName,
         phone: userPhone,
         isVerified: userIsVerified === 'true',
         isAdmin: userIsAdmin === 'true'
@@ -66,7 +67,8 @@ const Home = () => {
   const handleLogout = () => {
     // Clear all user data from localStorage
     localStorage.removeItem('token');
-    localStorage.removeItem('userName');
+    localStorage.removeItem('userFirstName');
+    localStorage.removeItem('userLastName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
     localStorage.removeItem('userPhone');
